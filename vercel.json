@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "name": "chrono-forge",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "env": {
+    "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID": "@walletconnect-project-id",
+    "NEXT_PUBLIC_CHRONO_FORGE_ADDRESS": "@chrono-forge-address"
+  }
+}
