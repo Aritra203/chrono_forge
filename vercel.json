@@ -14,7 +14,7 @@
     }
   ],
   "env": {
-    "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID": "@walletconnect-project-id",
-    "NEXT_PUBLIC_CHRONO_FORGE_ADDRESS": "@chrono-forge-address"
+    "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID": "eda41ee16852b8e965711f941af4a67a",
+    "NEXT_PUBLIC_CHRONO_FORGE_ADDRESS": "0xA06955c2930D66efb83Def15Fa704EFcd04a0E5a"
   }
 }
