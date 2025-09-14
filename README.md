@@ -1,4 +1,4 @@
-# Ch🔷 **Avalanche Fuji Only**: This project runs exclusively on Avalanche Fuji testnet - no real AVAX required! Chrono-Forge: Dynamic NFT Evolution Platform
+#  **Chrono Forge**: This project runs exclusively on Avalanche Fuji testnet - no real AVAX required! Chrono-Forge: Dynamic NFT Evolution Platform
 
 Chrono-Forge is a cutting-edge NFT platform featuring dynamic on-chain SVG generation and evolving attributes. Built with Next.js, Hardhat, and modern Web3 tools.
 
