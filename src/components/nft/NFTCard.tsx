@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { useChronoForge } from '@/hooks/useChronoForge'
@@ -41,11 +41,13 @@ export function NFTCard({ tokenId }: NFTCardProps) {
     isLoading,
     error,
     isConfirming,
+    isConfirmed,
+    hash,
     useTokenAttributes
   } = useChronoForge()
   
   // Get token attributes using the hook
-  const { data: attributes, isLoading: attributesLoading } = useTokenAttributes(tokenId)
+  const { data: attributes, isLoading: attributesLoading, refetch: refetchAttributes } = useTokenAttributes(tokenId)
   
   const [isFlipped, setIsFlipped] = useState(false)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
@@ -135,6 +137,18 @@ export function NFTCard({ tokenId }: NFTCardProps) {
     return () => clearInterval(timer)
   }, [])
 
+  // Handle transaction confirmation and refresh data
+  useEffect(() => {
+    if (isConfirmed && hash && actionLoading) {
+      console.log(`Transaction confirmed for ${actionLoading}, refreshing NFT #${tokenId} data...`)
+      // Small delay to ensure blockchain state is updated
+      setTimeout(() => {
+        refetchAttributes()
+        setActionLoading(null)
+      }, 1500)
+    }
+  }, [isConfirmed, hash, actionLoading, refetchAttributes, tokenId])
+
   if (error && (error as Error)?.message?.includes('out of bounds')) {
     return (
       <Card className="w-full max-w-sm border-red-600 bg-red-900/20">
@@ -222,6 +236,7 @@ export function NFTCard({ tokenId }: NFTCardProps) {
     setActionLoading('energize')
     try {
       await energize(tokenId)
+      // Don't clear loading state here - let useEffect handle it after confirmation
     } catch (error) {
       console.error('Failed to energize NFT:', error)
       setActionLoading(null)
@@ -232,6 +247,7 @@ export function NFTCard({ tokenId }: NFTCardProps) {
     setActionLoading('evolve')
     try {
       await evolve(tokenId)
+      // Don't clear loading state here - let useEffect handle it after confirmation
     } catch (error) {
       console.error('Failed to evolve NFT:', error)
       setActionLoading(null)
@@ -308,6 +324,7 @@ export function NFTCard({ tokenId }: NFTCardProps) {
     setActionLoading('infuse')
     try {
       await infuse(tokenId, demoPartnerToken, selectedTrait)
+      // Don't clear loading state here - let useEffect handle it after confirmation
     } catch (error) {
       console.error('Failed to infuse trait:', error)
       setActionLoading(null)
@@ -318,6 +335,7 @@ export function NFTCard({ tokenId }: NFTCardProps) {
     setActionLoading('cleanse')
     try {
       await cleanse(tokenId, traitIndex)
+      // Don't clear loading state here - let useEffect handle it after confirmation
     } catch (error) {
       console.error('Failed to cleanse trait:', error)
       setActionLoading(null)
@@ -343,6 +361,7 @@ export function NFTCard({ tokenId }: NFTCardProps) {
       setActionLoading('forge')
       try {
         await forge(tokenId, secondTokenId)
+        // Don't clear loading state here - let useEffect handle it after confirmation
       } catch (error) {
         console.error('Failed to forge NFTs:', error)
         setActionLoading(null)
@@ -557,7 +576,7 @@ export function NFTCard({ tokenId }: NFTCardProps) {
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
                   <Zap className="h-4 w-4 mr-2 animate-pulse" />
                   {actionLoading === 'energize' ? 
-                    (isConfirming ? 'Confirming...' : 'Energizing...') : 
+                    (isConfirmed ? 'Updating...' : isConfirming ? 'Confirming...' : 'Energizing...') : 
                     `⚡ Energize (+${getEnergyGain()} Energy)`
                   }
                 </Button>
@@ -580,7 +599,7 @@ export function NFTCard({ tokenId }: NFTCardProps) {
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
                   <Sparkles className="h-4 w-4 mr-2 animate-spin" />
                   {actionLoading === 'evolve' ? 
-                    (isConfirming ? 'Confirming...' : 'Evolving...') : 
+                    (isConfirmed ? 'Updating...' : isConfirming ? 'Confirming...' : 'Evolving...') : 
                     '✨ Evolve'
                   }
                 </Button>
@@ -594,7 +613,10 @@ export function NFTCard({ tokenId }: NFTCardProps) {
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500"></div>
                   <span className="mr-1">🧪</span>
-                  {actionLoading === 'infuse' ? 'Infusing...' : 'Infuse (Demo)'}
+                  {actionLoading === 'infuse' ? 
+                    (isConfirmed ? 'Updating...' : isConfirming ? 'Confirming...' : 'Infusing...') : 
+                    'Infuse (Demo)'
+                  }
                 </Button>
 
                 {attributes.infusedTraits.length > 0 ? (
@@ -605,7 +627,10 @@ export function NFTCard({ tokenId }: NFTCardProps) {
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500"></div>
                     <span className="mr-1">🧽</span>
-                    {actionLoading === 'cleanse' ? 'Cleansing...' : 'Cleanse'}
+                    {actionLoading === 'cleanse' ? 
+                      (isConfirmed ? 'Updating...' : isConfirming ? 'Confirming...' : 'Cleansing...') : 
+                      'Cleanse'
+                    }
                   </Button>
                 ) : (
                   <div className="h-8 bg-slate-700/50 border border-slate-600/30 rounded-md flex items-center justify-center">
@@ -621,7 +646,10 @@ export function NFTCard({ tokenId }: NFTCardProps) {
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500"></div>
                     <span className="mr-2">⚒️</span>
-                    {actionLoading === 'forge' ? 'Forging...' : 'Forge (Need 2 Evolved NFTs)'}
+                    {actionLoading === 'forge' ? 
+                      (isConfirmed ? 'Updating...' : isConfirming ? 'Confirming...' : 'Forging...') : 
+                      'Forge (Need 2 Evolved NFTs)'
+                    }
                   </Button>
                 )}
               </div>
